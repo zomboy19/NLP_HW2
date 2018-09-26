@@ -1,7 +1,7 @@
 # Program to compute bigram probabilities
+# with and without smoothing
 
 import csv
-
 from collections import Counter
 
 # Open and read corpus
@@ -81,3 +81,4 @@ with open('bigram_prob.csv', 'w', newline = '') as f:
     writer = csv.writer(f)
     for row in bigram_prob.items():
         writer.writerow(row)
+
