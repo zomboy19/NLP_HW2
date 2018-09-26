@@ -4,81 +4,59 @@
 import csv
 from collections import Counter
 
-# Open and read corpus
-#file = open("corpusA_test.txt", "r")
-#data = file.read()
+def DictToFile(DictToWrite,Filename):
+    """This function writes data from a dictionary to a CSV file
+    Args:
+        DictToWrite: A dictionary that need to be written to the file
+        Filename: A name to give to the file.
+    """
+    CSVFile = Filename+'.csv'
+    with open(CSVFile, 'w', newline = '') as f:
+        writer = csv.writer(f)
+        for row in DictToWrite.items():
+            writer.writerow(row)
 
+
+#file = open("corpusA_test.txt", "r")
+#data = file.read()                              # Get corpus data
 file = open("corpusA.txt", "r")
 data = file.read()
 
-#print(data)
 
-# Convert corpus/sentence into array of words
-words = data.split()
-
-#print(words)
-#for word in words:
-#   print(word)
-
-
-# No of tokens in corpus
-corpus_size = len(words)
-
+words = data.split()                            # Convert corpus/sentence into array of words
+corpus_size = len(words)                        # No of tokens in corpus / Corpus size
 print("Corpus size: ",corpus_size)
+wordcount = Counter(words)                      # Get histogram of all words 
+print("Vocabulary size: ",len(wordcount))       # Vocabulary size
+sorted_wordcount_list = sorted(wordcount)       # Sort wordcount to make search easier
 
 
-"""
-vocabulary = []
-for word in words:
-    if not word in vocabulary:
-        vocabulary.append(word)
-
-#print(vocabulary)
-
-vocabulary_size = len(vocabulary)
-print(vocabulary_size)
-
-#print(vocabulary)
-
-sorted_vocabulary = sorted(vocabulary)
-#print(sorted_vocabulary)
-"""
-
-
-wordcount = Counter(words)
-#print(wordcount)
-print("Vocabulary size: ",len(wordcount))
-
-sorted_wordcount_list = sorted(wordcount)
-#print(sorted_wordcount_list)
-
-sorted_wordcount = {}
-
+sorted_wordcount = {}                           # Get sorted wordcount in this dictionary
 for word in sorted_wordcount_list:
     sorted_wordcount[word] = wordcount[word]
 
-with open('wordcount.csv', 'w', newline = '') as f:
-    writer = csv.writer(f)
-    for row in sorted_wordcount.items():
-        writer.writerow(row)
 
-bigram_list = []
-for i in range(len(words)-1):
-    bigram_list.append((words[i], words[i+1]))
+DictToFile(sorted_wordcount,"Wordcount")        # Get wordcount in a file named "Wordcount"
 
-bigram_count = Counter(bigram_list)
+
+bigram_list = []                                # Generate a list of all bi-grams from the corpus text 
+for i in range(len(words)-1):                   # Iterate over corpus and keep storing all bi-grams in a list
+    bigram_list.append((words[i], words[i+1]))  # Bi-gram = (this word, next word)
+
+print("Total number of bi-grams: ",len(bigram_list))
+
+bigram_count = Counter(bigram_list)             # Get histogram of all bi-grams
+
+unique_bigram_list = sorted(list(set(bigram_list)))
+print("Number of unique bi-grams: ",len(unique_bigram_list))
+
+
 bigram_prob = {}
-
-
-for bigram in bigram_list:
+for bigram in unique_bigram_list:
     #print ("bigram:",bigram)
     #print ("value:",bigram_count.get((bigram)))
     #print ("count of", bigram[0],":")
     #print (sorted_wordcount[bigram[0]])
     bigram_prob[bigram] = ( bigram_count.get(bigram) ) / ( sorted_wordcount[bigram[0]] )
 
-with open('bigram_prob.csv', 'w', newline = '') as f:
-    writer = csv.writer(f)
-    for row in bigram_prob.items():
-        writer.writerow(row)
-
+DictToFile(bigram_prob,"Bigram Probabilities")
